@@ -6,11 +6,11 @@ import (
 
 	"github.com/urfave/cli/v3"
 
-	"github.com/evilmartians/lefthook/v2/internal/command"
+	"github.com/evilmartians/lefthook/v2/lefthook"
 )
 
 func run() *cli.Command {
-	var args command.RunArgs
+	var args lefthook.RunArgs
 	var colors string
 	failOnChanges := &cli.BoolWithInverseFlag{
 		Name:  "fail-on-changes",
@@ -102,11 +102,6 @@ func run() *cli.Command {
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
-			l, err := command.NewLefthook(args.Verbose, colors)
-			if err != nil {
-				return err
-			}
-
 			if failOnChanges.IsSet() {
 				value := cmd.Bool("fail-on-changes")
 				args.FailOnChanges = &value
@@ -122,11 +117,12 @@ func run() *cli.Command {
 
 			args.Hook = cmd.Args().Get(0)
 			args.GitArgs = cmd.Args().Slice()[1:]
-			return l.Run(ctx, args)
+
+			return Run(ctx, args, colors)
 		},
 		ShellComplete: func(ctx context.Context, cmd *cli.Command) {
-			command.ShellCompleteFlags(cmd)
-			command.ShellCompleteHookNames()
+			shellCompleteFlags(cmd)
+			shellCompleteHookNames()
 		},
 	}
 }

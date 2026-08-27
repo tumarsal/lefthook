@@ -8,7 +8,7 @@ import (
 
 	"github.com/evilmartians/lefthook/v2/internal/command"
 	"github.com/evilmartians/lefthook/v2/internal/logger"
-	ver "github.com/evilmartians/lefthook/v2/internal/version"
+	"github.com/evilmartians/lefthook/v2/lefthook"
 )
 
 func version() *cli.Command {
@@ -29,13 +29,26 @@ func version() *cli.Command {
 				Destination: &verbose,
 			},
 		},
-		Action: func(_ctx context.Context, cmd *cli.Command) error {
-			logger.New(os.Stdout).Info(ver.Version(verbose))
-
+		Action: func(_ctx context.Context, _ *cli.Command) error {
+			logger.New(os.Stdout).Info(PrintVersion(verbose))
 			return nil
 		},
 		ShellComplete: func(ctx context.Context, cmd *cli.Command) {
-			command.ShellCompleteFlags(cmd)
+			shellCompleteFlags(cmd)
 		},
 	}
+}
+
+// PrintVersion returns the lefthook version string for CLI output.
+func PrintVersion(verbose bool) string {
+	return lefthook.Version(verbose)
+}
+
+// shellCompleteHookNames and shellCompleteFlags delegate to internal/command for CLI completion.
+func shellCompleteHookNames() {
+	command.ShellCompleteHookNames()
+}
+
+func shellCompleteFlags(cmd *cli.Command) {
+	command.ShellCompleteFlags(cmd)
 }

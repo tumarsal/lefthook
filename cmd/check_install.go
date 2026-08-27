@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"context"
+	"errors"
+	"os"
 
 	"github.com/urfave/cli/v3"
 
-	"github.com/evilmartians/lefthook/v2/internal/command"
+	"github.com/evilmartians/lefthook/v2/lefthook"
 )
 
 func checkInstall() *cli.Command {
@@ -23,16 +25,18 @@ func checkInstall() *cli.Command {
 				Destination: &verbose,
 			},
 		},
-		Action: func(ctx context.Context, cmd *cli.Command) error {
-			l, err := command.NewLefthook(verbose, "auto")
-			if err != nil {
-				return err
+		Action: func(ctx context.Context, _ *cli.Command) error {
+			err := CheckInstall(ctx, verbose)
+			if err == nil {
+				os.Exit(0)
 			}
-
-			return l.CheckInstall(ctx)
+			if errors.Is(err, lefthook.ErrNotInstalled) {
+				os.Exit(1)
+			}
+			return err
 		},
 		ShellComplete: func(ctx context.Context, cmd *cli.Command) {
-			command.ShellCompleteFlags(cmd)
+			shellCompleteFlags(cmd)
 		},
 	}
 }

@@ -13,19 +13,27 @@ const (
 )
 
 func (l *Lefthook) CheckInstall(_ctx context.Context) error {
-	check, err := l.checkInstall()
+	ok, err := l.CheckInstallStatus(_ctx)
 	if err != nil {
 		return err
 	}
 
-	switch check {
-	case installed:
+	if ok {
 		os.Exit(0)
-	case notInstalled:
-		os.Exit(1)
 	}
 
+	os.Exit(1)
 	return nil
+}
+
+// CheckInstallStatus reports whether hooks are installed and synchronized.
+func (l *Lefthook) CheckInstallStatus(_ctx context.Context) (bool, error) {
+	check, err := l.checkInstall()
+	if err != nil {
+		return false, err
+	}
+
+	return check == installed, nil
 }
 
 func (l *Lefthook) checkInstall() (installationStatus, error) {

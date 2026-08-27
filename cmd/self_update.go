@@ -2,19 +2,14 @@ package cmd
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"os/signal"
 
 	"github.com/urfave/cli/v3"
 
-	"github.com/evilmartians/lefthook/v2/internal/command"
-	"github.com/evilmartians/lefthook/v2/internal/logger"
-	"github.com/evilmartians/lefthook/v2/internal/updater"
+	"github.com/evilmartians/lefthook/v2/lefthook"
 )
 
 func selfUpdate() *cli.Command {
-	var yes, force, verbose bool
+	var args lefthook.SelfUpdateArgs
 
 	return &cli.Command{
 		Name:  "self-update",
@@ -24,46 +19,25 @@ func selfUpdate() *cli.Command {
 				Name:        "yes",
 				Aliases:     []string{"y"},
 				Usage:       "do not prompt y/n",
-				Destination: &yes,
+				Destination: &args.Yes,
 			},
 			&cli.BoolFlag{
 				Name:        "force",
 				Aliases:     []string{"f"},
 				Usage:       "force reinstall",
-				Destination: &force,
+				Destination: &args.Force,
 			},
 			&cli.BoolFlag{
 				Name:        "verbose",
 				Aliases:     []string{"v"},
-				Destination: &verbose,
+				Destination: &args.Verbose,
 			},
 		},
-		Action: func(ctx context.Context, cmd *cli.Command) error {
-			l := logger.New(os.Stdout)
-			if os.Getenv(command.EnvVerbose) == "1" || os.Getenv(command.EnvVerbose) == "true" {
-				verbose = true
-			}
-			if verbose {
-				l.SetLevel(logger.LevelDebug)
-				l.Debug("Verbose mode enabled")
-			}
-
-			exePath, err := os.Executable()
-			if err != nil {
-				return fmt.Errorf("failed to determine the binary path: %w", err)
-			}
-
-			ctxCancel, stop := signal.NotifyContext(ctx, os.Interrupt)
-			defer stop()
-
-			return updater.New(l).SelfUpdate(ctxCancel, updater.Options{
-				Yes:     yes,
-				Force:   force,
-				ExePath: exePath,
-			})
+		Action: func(ctx context.Context, _ *cli.Command) error {
+			return SelfUpdate(ctx, args)
 		},
 		ShellComplete: func(ctx context.Context, cmd *cli.Command) {
-			command.ShellCompleteFlags(cmd)
+			shellCompleteFlags(cmd)
 		},
 	}
 }

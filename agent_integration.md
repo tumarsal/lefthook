@@ -6,9 +6,10 @@
 
 | Задача | Пакет | API |
 |--------|-------|-----|
-| Запустить hook «как CLI» | `github.com/evilmartians/lefthook/v2/lefthook` | `lefthook.New(...).Run(ctx, "pre-commit")` |
+| Любая CLI-команда | `github.com/evilmartians/lefthook/v2/lefthook` | `app.RunWithArgs`, `app.Install`, … (см. «Публичные команды») |
+| Запустить hook (кратко) | `lefthook` | `app.Run(ctx, "pre-commit")` |
 | Расширить `skip`/`only` | `github.com/evilmartians/lefthook/v2/skip` | `skip.NewSkipChecker(skip.WithCondition(...))` |
-| Полный контроль (только внутри репозитория lefthook) | `internal/command`, `internal/run` | см. раздел «Низкий уровень» |
+| CLI-обёртки (тот же module path) | `github.com/evilmartians/lefthook/v2/cmd` | `cmd.Run`, `cmd.Install`, … |
 
 **Важно:** пакеты `internal/*` нельзя импортировать из другого Go-модуля. Для внешней интеграции используйте только `lefthook` и `skip`.
 
@@ -82,7 +83,21 @@ func WithColors(colors string) Option   // "on" | "off" | "auto" (default)
 type App struct { ... }
 
 func (a *App) Run(ctx context.Context, hook string, gitArgs ...string) error
+func (a *App) RunWithArgs(ctx context.Context, args RunArgs) error
+func (a *App) Install(ctx context.Context, args InstallArgs, hooks ...string) error
+func (a *App) Uninstall(ctx context.Context, args UninstallArgs) error
+func (a *App) CheckInstall(ctx context.Context) error
+func (a *App) Dump(ctx context.Context, args DumpArgs) error
+func (a *App) Add(ctx context.Context, args AddArgs) error
+func (a *App) Validate(ctx context.Context, args ValidateArgs) error
+
+func Version(verbose bool) string
+func SelfUpdate(ctx context.Context, args SelfUpdateArgs) error
+
+var ErrNotInstalled error
 ```
+
+Полная таблица команд — в разделе [Публичные команды CLI](#публичные-команды-cli).
 
 ### Минимальный пример
 
@@ -133,6 +148,98 @@ err := app.Run(ctx, "prepare-commit-msg", ".git/COMMIT_EDITMSG", "message")
 - Возвращает `error` — job завершился с ошибкой, конфиг не найден (для unknown hook), прерван по Ctrl+C, и т.д.
 - Уважает `LEFTHOOK=0` / `LEFTHOOK=false` — немедленный выход без ошибки.
 - Автоустанавливает hooks при первом запуске (как CLI), если не задан `NoAutoInstall`.
+
+---
+
+## Публичные команды CLI
+
+Все команды из `lefthook run|install|…` доступны как публичные функции.
+
+| CLI | Публичная функция | Файл | Требует `App` |
+|-----|-------------------|------|---------------|
+| `run` | `(a *App) RunWithArgs(ctx, args)` | `lefthook/commands.go` | да |
+| `run` (кратко) | `(a *App) Run(ctx, hook, gitArgs...)` | `lefthook/lefthook.go` | да |
+| `install` | `(a *App) Install(ctx, args, hooks...)` | `lefthook/commands.go` | да |
+| `uninstall` | `(a *App) Uninstall(ctx, args)` | `lefthook/commands.go` | да |
+| `check-install` | `(a *App) CheckInstall(ctx)` | `lefthook/commands.go` | да |
+| `dump` | `(a *App) Dump(ctx, args)` | `lefthook/commands.go` | да |
+| `add` | `(a *App) Add(ctx, args)` | `lefthook/commands.go` | да |
+| `validate` | `(a *App) Validate(ctx, args)` | `lefthook/commands.go` | да |
+| `version` | `Version(verbose)` | `lefthook/commands.go` | нет |
+| `self-update` | `SelfUpdate(ctx, args)` | `lefthook/commands.go` | нет |
+
+Action-функции CLI-слоя (тот же module path): `cmd/actions.go` — `cmd.Run`, `cmd.Install`, …
+
+### `run`
+
+**Функция:** `app.RunWithArgs(ctx, lefthook.RunArgs)`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `Hook` | `string` | Имя hook (обязательно) |
+| `GitArgs` | `[]string` | Аргументы от Git |
+| `Verbose` | `bool` | Debug-логи |
+| `Force` | `bool` | Не пропускать jobs при пустых файлах |
+| `NoAutoInstall` | `bool` | Не устанавливать hooks автоматически |
+| `NoStageFixed` | `bool` | Игнорировать `stage_fixed: true` |
+| `NoTTY` | `bool` | Без TTY/spinner |
+| `SkipLFS` | `bool` | Не запускать LFS hooks |
+| `AllFiles` | `bool` | Подставить `{all_files}` |
+| `FilesFromStdin` | `bool` | Список файлов из STDIN |
+| `Exclude` | `[]string` | Исключить файлы из templates |
+| `Files` | `[]string` | Override file templates |
+| `RunOnlyJobs` | `[]string` | Только jobs с этими именами |
+| `RunOnlyTags` | `[]string` | Только jobs с этими tags |
+| `RunOnlyCommands` | `[]string` | Legacy alias для `--command` |
+| `FailOnChanges` | `*bool` | Exit 1 если файлы изменились |
+| `FailOnChangesDiff` | `*bool` | Показать diff при fail-on-changes |
+
+### `install`
+
+**Функция:** `app.Install(ctx, lefthook.InstallArgs, hooks ...string)`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `Force` | `bool` | Перезаписать `.old`, игнорировать `core.hooksPath` |
+| `ResetHooksPath` | `bool` | Сбросить `core.hooksPath` |
+
+Пустой `hooks` → установить все из конфига.
+
+### `uninstall`
+
+**Функция:** `app.Uninstall(ctx, lefthook.UninstallArgs)`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `Force` | `bool` | Удалить все Git hooks |
+| `RemoveConfig` | `bool` | Удалить конфиги lefthook |
+
+### `check-install`
+
+**Функция:** `app.CheckInstall(ctx) error`
+
+- `nil` — hooks установлены и синхронизированы
+- `lefthook.ErrNotInstalled` — hooks отсутствуют или устарели
+
+### `dump`
+
+**Функция:** `app.Dump(ctx, lefthook.DumpArgs)` — `Format`: `"yaml"` | `"json"` | `"toml"`. Вывод в stdout.
+
+### `add`
+
+**Функция:** `app.Add(ctx, lefthook.AddArgs)` — поля: `Hook`, `Force`, `CreateDirs`.
+
+### `validate`
+
+**Функция:** `app.Validate(ctx, lefthook.ValidateArgs)`
+
+### `version`
+
+**Функция:** `lefthook.Version(verbose bool) string` — без `App`.
+
+### `self-update`
+
+**Функция:** `lefthook.SelfUpdate(ctx, lefthook.SelfUpdateArgs)` — поля: `Yes`, `Force`, `Verbose`, `ExePath`.
 
 ---
 
@@ -536,7 +643,10 @@ func RunPreCommit(ctx context.Context) error {
 
 | Путь | Назначение |
 |------|------------|
-| `lefthook/lefthook.go` | Публичный фасад |
+| `lefthook/lefthook.go` | App, New, Run |
+| `lefthook/commands.go` | RunWithArgs, Install, Uninstall, CheckInstall, Dump, Add, Validate, Version, SelfUpdate |
+| `lefthook/types.go` | RunArgs, InstallArgs, … |
+| `cmd/actions.go` | Публичные action-функции CLI (Run, Install, …) |
 | `skip/skip.go` | Интерфейсы Checker, Condition |
 | `skip/env.go`, `file.go`, `bin.go` | Opt-in conditions |
 | `internal/command/lefthook.go` | NewLefthook, WithSkipChecker |

@@ -5,11 +5,11 @@ import (
 
 	"github.com/urfave/cli/v3"
 
-	"github.com/evilmartians/lefthook/v2/internal/command"
+	"github.com/evilmartians/lefthook/v2/lefthook"
 )
 
 func uninstall() *cli.Command {
-	var args command.UninstallArgs
+	var args lefthook.UninstallArgs
 	var verbose bool
 
 	return &cli.Command{
@@ -33,16 +33,11 @@ func uninstall() *cli.Command {
 				Destination: &args.RemoveConfig,
 			},
 		},
-		Action: func(ctx context.Context, cmd *cli.Command) error {
-			l, err := command.NewLefthook(verbose, "auto")
-			if err != nil {
-				return err
-			}
-
-			return l.Uninstall(ctx, args)
+		Action: func(ctx context.Context, _ *cli.Command) error {
+			return Uninstall(ctx, args, verbose)
 		},
 		ShellComplete: func(ctx context.Context, cmd *cli.Command) {
-			command.ShellCompleteFlags(cmd)
+			shellCompleteFlags(cmd)
 		},
 	}
 }

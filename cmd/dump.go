@@ -6,13 +6,13 @@ import (
 
 	"github.com/urfave/cli/v3"
 
-	"github.com/evilmartians/lefthook/v2/internal/command"
+	"github.com/evilmartians/lefthook/v2/lefthook"
 )
 
 var errInvalidFormat = errors.New("invalid 'format' value, supported: 'toml', 'yaml', 'json'")
 
 func dump() *cli.Command {
-	args := command.DumpArgs{
+	args := lefthook.DumpArgs{
 		Format: "yaml",
 	}
 
@@ -38,16 +38,11 @@ func dump() *cli.Command {
 				},
 			},
 		},
-		Action: func(ctx context.Context, cmd *cli.Command) error {
-			l, err := command.NewLefthook(false, "no")
-			if err != nil {
-				return err
-			}
-
-			return l.Dump(ctx, args)
+		Action: func(ctx context.Context, _ *cli.Command) error {
+			return Dump(ctx, args)
 		},
 		ShellComplete: func(ctx context.Context, cmd *cli.Command) {
-			command.ShellCompleteFlags(cmd)
+			shellCompleteFlags(cmd)
 		},
 	}
 }

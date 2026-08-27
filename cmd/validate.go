@@ -5,11 +5,11 @@ import (
 
 	"github.com/urfave/cli/v3"
 
-	"github.com/evilmartians/lefthook/v2/internal/command"
+	"github.com/evilmartians/lefthook/v2/lefthook"
 )
 
 func validate() *cli.Command {
-	var args command.ValidateArgs
+	var args lefthook.ValidateArgs
 	var verbose bool
 
 	return &cli.Command{
@@ -22,16 +22,11 @@ func validate() *cli.Command {
 				Destination: &verbose,
 			},
 		},
-		Action: func(ctx context.Context, cmd *cli.Command) error {
-			l, err := command.NewLefthook(verbose, "auto")
-			if err != nil {
-				return nil
-			}
-
-			return l.Validate(ctx, args)
+		Action: func(ctx context.Context, _ *cli.Command) error {
+			return Validate(ctx, args, verbose)
 		},
 		ShellComplete: func(ctx context.Context, cmd *cli.Command) {
-			command.ShellCompleteFlags(cmd)
+			shellCompleteFlags(cmd)
 		},
 	}
 }
