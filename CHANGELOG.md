@@ -3,6 +3,8 @@
 ## Unreleased
 
 - feat: extensible `skip.Checker` for library use ([#TBD](https://github.com/evilmartians/lefthook/pull/TBD))
+- feat: `WithHookCommand` / `InstallArgs.HookCommand` for proxy binary in Git hooks
+- fix: prefer configured lefthook command over `LEFTHOOK_BIN` in generated hooks
 
 ## 2.1.11 (2026-08-21)
 

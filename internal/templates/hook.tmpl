@@ -15,14 +15,12 @@ fi
 
 call_lefthook()
 {
+  {{- if .LefthookPath}}
+  {{ .LefthookPath }} "$@"
+  {{- else}}
   if test -n "$LEFTHOOK_BIN"
   then
     "$LEFTHOOK_BIN" "$@"
-  {{ if .LefthookPath -}}
-  elif test -n "{{ .LefthookPath }}"
-  then
-    {{ .LefthookPath }} "$@"
-  {{ end -}}
   elif lefthook{{.Extension}} -h >/dev/null 2>&1
   then
     lefthook{{.Extension}} "$@"
@@ -105,6 +103,7 @@ call_lefthook()
       {{- end}}
     fi
   fi
+  {{- end}}
 }
 
 call_lefthook run "{{.HookName}}" "$@"

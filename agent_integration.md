@@ -77,6 +77,7 @@ package lefthook
 func New(opts ...Option) (*App, error)
 
 func WithSkipChecker(c skip.Checker) Option
+func WithHookCommand(cmd ...string) Option
 func WithVerbose(verbose bool) Option
 func WithColors(colors string) Option   // "on" | "off" | "auto" (default)
 
@@ -202,8 +203,13 @@ Action-функции CLI-слоя (тот же module path): `cmd/actions.go` �
 |------|-----|----------|
 | `Force` | `bool` | Перезаписать `.old`, игнорировать `core.hooksPath` |
 | `ResetHooksPath` | `bool` | Сбросить `core.hooksPath` |
+| `HookCommand` | `[]string` | Прокси-команда для hooks, напр. `{"tira", "my", "git", "lefthook"}` |
 
 Пустой `hooks` → установить все из конфига.
+
+Приоритет команды в hooks: `InstallArgs.HookCommand` > `WithHookCommand(...)` > YAML `lefthook:`.
+
+См. [Прокси-команда в Git hooks](#прокси-команда-в-git-hooks).
 
 ### `uninstall`
 
@@ -240,6 +246,57 @@ Action-функции CLI-слоя (тот же module path): `cmd/actions.go` �
 ### `self-update`
 
 **Функция:** `lefthook.SelfUpdate(ctx, lefthook.SelfUpdateArgs)` — поля: `Yes`, `Force`, `Verbose`, `ExePath`.
+
+---
+
+## Прокси-команда в Git hooks
+
+Когда другой бинарь встраивает lefthook (например `tira my git lefthook`), после `Install` все Git hooks должны вызывать этот прокси, а не `lefthook` из PATH.
+
+### Уже есть в YAML
+
+```yaml
+lefthook: tira my git lefthook
+```
+
+### Программно (рекомендуется для пакета)
+
+```go
+app, err := lefthook.New(
+    lefthook.WithHookCommand("tira", "my", "git", "lefthook"),
+)
+if err != nil {
+    return err
+}
+return app.Install(ctx, lefthook.InstallArgs{})
+```
+
+Или одноразово при Install:
+
+```go
+app.Install(ctx, lefthook.InstallArgs{
+    HookCommand: []string{"tira", "my", "git", "lefthook"},
+})
+```
+
+### Итоговый hook
+
+```sh
+call_lefthook()
+{
+  tira my git lefthook "$@"
+}
+
+call_lefthook run "pre-commit" "$@"
+```
+
+Приоритет в сгенерированном hook: **прокси (`LefthookPath`) > `$LEFTHOOK_BIN` > PATH/fallback**.
+
+Если прокси задан при Install, он запекается в скрипт без runtime `test`; ветка `$LEFTHOOK_BIN` в этот hook не попадает.
+
+### Требование к прокси
+
+Прокси должен принимать те же argv, что и lefthook CLI (`run <hook-name> [git-args...]`), и делегировать в реальную реализацию (например через `lefthook.New(...).RunWithArgs`).
 
 ---
 

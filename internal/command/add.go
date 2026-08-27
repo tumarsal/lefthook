@@ -32,7 +32,14 @@ func (l *Lefthook) Add(_ctx context.Context, args AddArgs) error {
 		return err
 	}
 
-	err = l.addHook(args.Hook, templates.Args{})
+	cfgLefthook := ""
+	if cfg, loadErr := l.LoadConfig(); loadErr == nil {
+		cfgLefthook = cfg.Lefthook
+	}
+
+	err = l.addHook(args.Hook, templates.Args{
+		LefthookPath: l.resolveLefthookPath(cfgLefthook, nil),
+	})
 	if err != nil {
 		return err
 	}

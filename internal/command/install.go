@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"al.essio.dev/pkg/shellescape"
 	"github.com/gobwas/glob"
 	"github.com/spf13/afero"
 
@@ -39,6 +40,9 @@ var (
 type InstallArgs struct {
 	Force          bool
 	ResetHooksPath bool
+	// HookCommand overrides the command written into Git hooks (e.g. {"tira", "my", "git", "lefthook"}).
+	// Takes precedence over Lefthook.WithHookCommand and config lefthook:.
+	HookCommand []string
 }
 
 func (l *Lefthook) Install(ctx context.Context, args InstallArgs, hooks []string) error {
@@ -98,7 +102,7 @@ func (l *Lefthook) installHooks(cfg *config.Config, hooks []string, args Install
 		return err
 	}
 
-	return l.createHooksIfNeeded(cfg, hooks, args.Force)
+	return l.createHooksIfNeeded(cfg, hooks, args)
 }
 
 func (l *Lefthook) readOrCreateConfig() (*config.Config, error) {
@@ -286,7 +290,7 @@ func (l *Lefthook) findAvailableRemoteRef(url string) (string, error) {
 	return "", errors.New("not found")
 }
 
-func (l *Lefthook) createHooksIfNeeded(cfg *config.Config, hooks []string, force bool) error {
+func (l *Lefthook) createHooksIfNeeded(cfg *config.Config, hooks []string, args InstallArgs) error {
 	onlyHooks := make(map[string]struct{})
 	for _, hook := range hooks {
 		onlyHooks[hook] = struct{}{}
@@ -309,6 +313,7 @@ func (l *Lefthook) createHooksIfNeeded(cfg *config.Config, hooks []string, force
 	}
 
 	roots := collectRoots(cfg)
+	lefthookPath := l.resolveLefthookPath(cfg.Lefthook, args.HookCommand)
 
 	hookNames := make([]string, 0, len(cfg.Hooks)+1)
 	for hook := range cfg.Hooks {
@@ -317,7 +322,7 @@ func (l *Lefthook) createHooksIfNeeded(cfg *config.Config, hooks []string, force
 			continue
 		}
 
-		if err = l.cleanHook(hook, force); err != nil {
+		if err = l.cleanHook(hook, args.Force); err != nil {
 			return fmt.Errorf("could not replace the hook: %w", err)
 		}
 
@@ -331,7 +336,7 @@ func (l *Lefthook) createHooksIfNeeded(cfg *config.Config, hooks []string, force
 			Rc:                      cfg.Rc,
 			AssertLefthookInstalled: cfg.AssertLefthookInstalled,
 			Roots:                   roots,
-			LefthookPath:            cfg.Lefthook,
+			LefthookPath:            lefthookPath,
 		}
 		if err = l.addHook(hook, templateArgs); err != nil {
 			return fmt.Errorf("could not add the hook: %w", err)
@@ -343,7 +348,7 @@ func (l *Lefthook) createHooksIfNeeded(cfg *config.Config, hooks []string, force
 			Rc:                      cfg.Rc,
 			AssertLefthookInstalled: cfg.AssertLefthookInstalled,
 			Roots:                   roots,
-			LefthookPath:            cfg.Lefthook,
+			LefthookPath:            lefthookPath,
 		}
 		if err = l.addHook(config.GhostHookName, templateArgs); err != nil {
 			return nil
@@ -362,6 +367,37 @@ func (l *Lefthook) createHooksIfNeeded(cfg *config.Config, hooks []string, force
 	}
 
 	return nil
+}
+
+// resolveLefthookPath picks the command written into Git hooks.
+// Priority: InstallArgs.HookCommand > Lefthook.hookCommand > cfg.Lefthook.
+func (l *Lefthook) resolveLefthookPath(cfgLefthook string, fromArgs []string) string {
+	if path := formatHookCommand(fromArgs); path != "" {
+		return path
+	}
+	if path := formatHookCommand(l.hookCommand); path != "" {
+		return path
+	}
+	return cfgLefthook
+}
+
+func formatHookCommand(cmd []string) string {
+	if len(cmd) == 0 {
+		return ""
+	}
+
+	escaped := make([]string, 0, len(cmd))
+	for _, arg := range cmd {
+		if arg == "" {
+			continue
+		}
+		escaped = append(escaped, shellescape.Quote(arg))
+	}
+	if len(escaped) == 0 {
+		return ""
+	}
+
+	return strings.Join(escaped, " ")
 }
 
 func collectRoots(cfg *config.Config) []string {

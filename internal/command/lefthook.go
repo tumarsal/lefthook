@@ -37,6 +37,7 @@ type Lefthook struct {
 	fs          afero.Fs
 	repo        *git.Repo
 	skipChecker skip.Checker
+	hookCommand []string
 }
 
 // LefthookOption configures NewLefthook.
@@ -46,6 +47,14 @@ type LefthookOption func(*Lefthook)
 func WithSkipChecker(checker skip.Checker) LefthookOption {
 	return func(l *Lefthook) {
 		l.skipChecker = checker
+	}
+}
+
+// WithHookCommand sets the argv used in generated Git hooks instead of looking up lefthook in PATH.
+// Example: WithHookCommand("tira", "my", "git", "lefthook") → hooks call `tira my git lefthook run <hook>`.
+func WithHookCommand(cmd ...string) LefthookOption {
+	return func(l *Lefthook) {
+		l.hookCommand = append([]string(nil), cmd...)
 	}
 }
 
