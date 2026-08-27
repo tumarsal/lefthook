@@ -16,6 +16,7 @@ import (
 	"github.com/evilmartians/lefthook/v2/internal/run/controller/utils"
 	"github.com/evilmartians/lefthook/v2/internal/run/result"
 	"github.com/evilmartians/lefthook/v2/internal/system"
+	"github.com/evilmartians/lefthook/v2/skip"
 )
 
 type Controller struct {
@@ -24,7 +25,7 @@ type Controller struct {
 	cachedStdin  io.Reader
 	executor     exec.Executor
 	cmd          system.CommandWithContext
-	skipChecker  *config.SkipChecker
+	skipChecker  skip.Checker
 	filesToStage *stageFilesList
 }
 
@@ -43,10 +44,19 @@ type Options struct {
 	Force             bool
 	SkipLFS           bool
 	NoStageFixed      bool
+	SkipChecker       skip.Checker
 }
 
-func NewController(repo *git.Repo, logger *logger.ExecutionLogger) *Controller {
-	return &Controller{
+type ControllerOption func(*Controller)
+
+func WithSkipChecker(checker skip.Checker) ControllerOption {
+	return func(c *Controller) {
+		c.skipChecker = checker
+	}
+}
+
+func NewController(repo *git.Repo, logger *logger.ExecutionLogger, opts ...ControllerOption) *Controller {
+	c := &Controller{
 		git:    repo,
 		logger: logger,
 
@@ -60,15 +70,38 @@ func NewController(repo *git.Repo, logger *logger.ExecutionLogger) *Controller {
 		// Command interface (for LFS hooks)
 		cmd: system.Cmd,
 
-		skipChecker:  config.NewSkipChecker(logger, system.Cmd),
 		filesToStage: newStageFilesList(),
 	}
+
+	for _, opt := range opts {
+		opt(c)
+	}
+
+	if c.skipChecker == nil {
+		c.skipChecker = skip.NewSkipChecker(
+			skip.WithLogger(logger),
+			skip.WithCommand(system.Cmd),
+		)
+	}
+
+	return c
+}
+
+func (c *Controller) shouldSkip(skipSetting, onlySetting any) bool {
+	if c.skipChecker == nil {
+		return false
+	}
+
+	return c.skipChecker.Check(func() skip.GitState {
+		state := c.git.State()
+		return skip.GitState{Branch: state.Branch, State: state.State}
+	}, skipSetting, onlySetting)
 }
 
 func (c *Controller) RunHook(ctx context.Context, opts Options, hook *config.Hook) ([]result.Result, error) {
 	results := make([]result.Result, 0, len(hook.Jobs))
 
-	if c.skipChecker.Check(c.git.State, hook.Skip, hook.Only) {
+	if c.shouldSkip(hook.Skip, hook.Only) {
 		c.logger.LogSkipped(hook.Name, "hook setting")
 		return results, nil
 	}

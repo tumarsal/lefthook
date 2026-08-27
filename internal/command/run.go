@@ -146,6 +146,7 @@ func (l *Lefthook) Run(ctx context.Context, args RunArgs) error {
 		SourceDirs:        sourceDirs,
 		FailOnChanges:     failOnChanges,
 		FailOnChangesDiff: failOnChangesDiff,
+		SkipChecker:       l.skipChecker,
 	})
 }
 

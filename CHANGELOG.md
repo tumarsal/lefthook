@@ -1,5 +1,9 @@
 # Change log
 
+## Unreleased
+
+- feat: extensible `skip.Checker` for library use ([#TBD](https://github.com/evilmartians/lefthook/pull/TBD))
+
 ## 2.1.11 (2026-08-21)
 
 - fix: inherit terminal size for PTY commands ([#1498](https://github.com/evilmartians/lefthook/pull/1498)) by [@mariokresic](https://github.com/mariokresic)

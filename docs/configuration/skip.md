@@ -128,6 +128,34 @@ prepare-commit-msg:
         - run: "! which aiautocommit"
 ```
 
+## Custom skip conditions (Go library)
+
+When embedding lefthook in a Go program, you can register custom skip/only matchers via the [`skip`](https://pkg.go.dev/github.com/evilmartians/lefthook/v2/skip) package.
+
+Built-in CLI conditions remain `ref`, `run`, git states, and booleans. Additional keys (for example `env`, `file`, `bin`, or your own) are available only when you register them in Go:
+
+```go
+checker := skip.NewSkipChecker(
+    skip.WithCommand(cmd),
+    skip.WithCondition(skip.Env()),
+    skip.WithCondition(skip.File(fs, repoRoot)),
+    skip.WithCondition(skip.Bin()),
+)
+
+app, err := lefthook.New(lefthook.WithSkipChecker(checker))
+```
+
+Implement `skip.Condition` to match custom YAML keys:
+
+```go
+type onlyOnVPN struct{}
+
+func (onlyOnVPN) Match(_ func() skip.GitState, item map[string]any) bool {
+    iface, ok := item["vpn"].(string)
+    return ok && vpnUp(iface)
+}
+```
+
 ::: callout tip
 Always skipping is useful when you have a `lefthook-local.yml` config and you don't want to run some commands locally. So you just overwrite the `skip` option for them to be `true`.
 

@@ -187,7 +187,7 @@ func (c *Controller) addStagedFiles(files []string) {
 }
 
 func (c *Controller) skipReason(scope *scope, job *config.Job, name string) string {
-	if c.skipChecker.Check(c.git.State, job.Skip, job.Only) {
+	if c.shouldSkip(job.Skip, job.Only) {
 		return "by condition"
 	}
 

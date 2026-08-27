@@ -19,6 +19,7 @@ import (
 	"github.com/evilmartians/lefthook/v2/internal/git"
 	"github.com/evilmartians/lefthook/v2/internal/logger"
 	"github.com/evilmartians/lefthook/v2/internal/templates"
+	"github.com/evilmartians/lefthook/v2/skip"
 )
 
 const (
@@ -32,13 +33,24 @@ const (
 )
 
 type Lefthook struct {
-	logger *logger.Logger
-	fs     afero.Fs
-	repo   *git.Repo
+	logger      *logger.Logger
+	fs          afero.Fs
+	repo        *git.Repo
+	skipChecker skip.Checker
+}
+
+// LefthookOption configures NewLefthook.
+type LefthookOption func(*Lefthook)
+
+// WithSkipChecker sets a custom skip/only condition checker for hook execution.
+func WithSkipChecker(checker skip.Checker) LefthookOption {
+	return func(l *Lefthook) {
+		l.skipChecker = checker
+	}
 }
 
 // NewLefthook returns an instance of Lefthook.
-func NewLefthook(verbose bool, colors string) (*Lefthook, error) {
+func NewLefthook(verbose bool, colors string, opts ...LefthookOption) (*Lefthook, error) {
 	l := logger.New(os.Stdout)
 	switch colors {
 	case "on", "yes", "true", "1":
@@ -57,11 +69,17 @@ func NewLefthook(verbose bool, colors string) (*Lefthook, error) {
 		return nil, err
 	}
 
-	return &Lefthook{
+	lh := &Lefthook{
 		logger: l,
 		fs:     fs,
 		repo:   repo,
-	}, nil
+	}
+
+	for _, opt := range opts {
+		opt(lh)
+	}
+
+	return lh, nil
 }
 
 func (l *Lefthook) LoadConfig() (*config.Config, error) {

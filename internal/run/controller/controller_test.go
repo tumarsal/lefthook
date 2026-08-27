@@ -16,6 +16,7 @@ import (
 	"github.com/evilmartians/lefthook/v2/internal/config"
 	"github.com/evilmartians/lefthook/v2/internal/run/controller/exec"
 	"github.com/evilmartians/lefthook/v2/internal/run/result"
+	"github.com/evilmartians/lefthook/v2/skip"
 	"github.com/evilmartians/lefthook/v2/tests/helpers/cmdtest"
 	"github.com/evilmartians/lefthook/v2/tests/helpers/configtest"
 	"github.com/evilmartians/lefthook/v2/tests/helpers/gittest"
@@ -608,12 +609,17 @@ func TestRunAll(t *testing.T) {
 			Cmd(cmdExecutor).
 			Fs(fs).
 			Build()
+		exLogger := loggertest.NewExecution()
 		controller := &Controller{
-			logger:       loggertest.NewExecution(),
+			logger:       exLogger,
 			filesToStage: newStageFilesList(),
 			git:          repo,
 			executor:     executor{},
 			cmd:          cmdtest.NewTracking(nil), // lfs hooks ignored in this test
+			skipChecker: skip.NewSkipChecker(
+				skip.WithLogger(exLogger),
+				skip.WithCommand(cmdExecutor),
+			),
 		}
 		cmdExecutor.Reset()
 
@@ -665,4 +671,68 @@ func TestRunAll(t *testing.T) {
 			}
 		})
 	}
+}
+
+type testCustomCondition struct{}
+
+func (testCustomCondition) Match(_ func() skip.GitState, item map[string]any) bool {
+	value, ok := item["custom"].(string)
+	return ok && value == "yes"
+}
+
+func TestWithSkipChecker(t *testing.T) {
+	root, err := filepath.Abs("src")
+	assert.NoError(t, err)
+
+	fs := afero.NewMemMapFs()
+	cmdExecutor := cmdtest.NewTracking(nil)
+	repo := gittest.NewRepositoryBuilder().
+		Root(root).
+		Cmd(cmdExecutor).
+		Fs(fs).
+		Build()
+
+	exLogger := loggertest.NewExecution()
+	controller := &Controller{
+		logger:       exLogger,
+		filesToStage: newStageFilesList(),
+		git:          repo,
+		executor:     executor{},
+		cmd:          cmdtest.NewTracking(nil),
+		skipChecker: skip.NewSkipChecker(
+			skip.WithCommand(cmdExecutor),
+			skip.WithCondition(testCustomCondition{}),
+		),
+	}
+
+	hook := configtest.ParseHook(`
+        jobs:
+          - name: custom
+            only:
+              - custom: yes
+            run: success
+          - name: skipped
+            only:
+              - custom: no
+            run: success
+    `)
+	hook.Name = "post-commit"
+
+	results, err := controller.RunHook(t.Context(), Options{}, hook)
+	assert.NoError(t, err)
+	assert.Len(t, results, 2)
+
+	var custom, skipped result.Result
+	for _, res := range results {
+		switch res.Name {
+		case "custom":
+			custom = res
+		case "skipped":
+			skipped = res
+		}
+	}
+
+	assert.True(t, custom.Success())
+	assert.False(t, skipped.Success())
+	assert.False(t, skipped.Failure())
 }

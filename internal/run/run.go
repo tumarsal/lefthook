@@ -26,5 +26,10 @@ func Run(
 	logger *logger.ExecutionLogger,
 	opts Options,
 ) ([]result.Result, error) {
-	return controller.NewController(repo, logger).RunHook(ctx, opts, hook)
+	var ctrlOpts []controller.ControllerOption
+	if opts.SkipChecker != nil {
+		ctrlOpts = append(ctrlOpts, controller.WithSkipChecker(opts.SkipChecker))
+	}
+
+	return controller.NewController(repo, logger, ctrlOpts...).RunHook(ctx, opts, hook)
 }
