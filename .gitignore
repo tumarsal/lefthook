@@ -1,4 +1,7 @@
+# Built binary at the repo root. The lefthook/ directory is the public Go package.
 /lefthook
+!/lefthook/
+!/lefthook/**
 /lefthook-local.yml
 /bin/
 /dist/
