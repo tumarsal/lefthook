@@ -5,9 +5,9 @@ import (
 
 	"github.com/spf13/afero"
 
-	"github.com/evilmartians/lefthook/v2/internal/git"
-	"github.com/evilmartians/lefthook/v2/internal/system"
-	"github.com/evilmartians/lefthook/v2/tests/helpers/loggertest"
+	"github.com/tumarsal/lefthook/v2/internal/git"
+	"github.com/tumarsal/lefthook/v2/internal/system"
+	"github.com/tumarsal/lefthook/v2/tests/helpers/loggertest"
 )
 
 type RepositoryBuilder struct {

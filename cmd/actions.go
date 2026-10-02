@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/evilmartians/lefthook/v2/lefthook"
+	"github.com/tumarsal/lefthook/v2/lefthook"
 )
 
 // Run executes a hook (lefthook run).

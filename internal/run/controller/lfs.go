@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/afero"
 
-	"github.com/evilmartians/lefthook/v2/internal/git"
+	"github.com/tumarsal/lefthook/v2/internal/git"
 )
 
 func (c *Controller) runLFSHook(ctx context.Context, hookName string, args []string) error {

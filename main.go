@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/evilmartians/lefthook/v2/cmd"
+	"github.com/tumarsal/lefthook/v2/cmd"
 )
 
 func main() {

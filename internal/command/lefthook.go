@@ -15,11 +15,11 @@ import (
 	"github.com/spf13/afero"
 	"github.com/urfave/cli/v3"
 
-	"github.com/evilmartians/lefthook/v2/internal/config"
-	"github.com/evilmartians/lefthook/v2/internal/git"
-	"github.com/evilmartians/lefthook/v2/internal/logger"
-	"github.com/evilmartians/lefthook/v2/internal/templates"
-	"github.com/evilmartians/lefthook/v2/skip"
+	"github.com/tumarsal/lefthook/v2/internal/config"
+	"github.com/tumarsal/lefthook/v2/internal/git"
+	"github.com/tumarsal/lefthook/v2/internal/logger"
+	"github.com/tumarsal/lefthook/v2/internal/templates"
+	"github.com/tumarsal/lefthook/v2/skip"
 )
 
 const (

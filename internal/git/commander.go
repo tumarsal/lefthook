@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/evilmartians/lefthook/v2/internal/logger"
-	"github.com/evilmartians/lefthook/v2/internal/system"
+	"github.com/tumarsal/lefthook/v2/internal/logger"
+	"github.com/tumarsal/lefthook/v2/internal/system"
 )
 
 // Commander provides some methods that take some effect on execution and/or result data.

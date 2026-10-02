@@ -6,9 +6,9 @@ import (
 
 	"github.com/urfave/cli/v3"
 
-	"github.com/evilmartians/lefthook/v2/internal/command"
-	"github.com/evilmartians/lefthook/v2/internal/logger"
-	"github.com/evilmartians/lefthook/v2/lefthook"
+	"github.com/tumarsal/lefthook/v2/internal/command"
+	"github.com/tumarsal/lefthook/v2/internal/logger"
+	"github.com/tumarsal/lefthook/v2/lefthook"
 )
 
 func version() *cli.Command {

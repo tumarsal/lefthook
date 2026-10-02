@@ -13,14 +13,14 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/evilmartians/lefthook/v2/internal/config"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/exec"
-	"github.com/evilmartians/lefthook/v2/internal/run/result"
-	"github.com/evilmartians/lefthook/v2/skip"
-	"github.com/evilmartians/lefthook/v2/tests/helpers/cmdtest"
-	"github.com/evilmartians/lefthook/v2/tests/helpers/configtest"
-	"github.com/evilmartians/lefthook/v2/tests/helpers/gittest"
-	"github.com/evilmartians/lefthook/v2/tests/helpers/loggertest"
+	"github.com/tumarsal/lefthook/v2/internal/config"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/exec"
+	"github.com/tumarsal/lefthook/v2/internal/run/result"
+	"github.com/tumarsal/lefthook/v2/skip"
+	"github.com/tumarsal/lefthook/v2/tests/helpers/cmdtest"
+	"github.com/tumarsal/lefthook/v2/tests/helpers/configtest"
+	"github.com/tumarsal/lefthook/v2/tests/helpers/gittest"
+	"github.com/tumarsal/lefthook/v2/tests/helpers/loggertest"
 )
 
 type (

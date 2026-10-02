@@ -4,10 +4,10 @@ import (
 	"context"
 	"io"
 
-	"github.com/evilmartians/lefthook/v2/internal/config"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/command/replacer"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/exec"
-	"github.com/evilmartians/lefthook/v2/internal/system"
+	"github.com/tumarsal/lefthook/v2/internal/config"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/command/replacer"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/exec"
+	"github.com/tumarsal/lefthook/v2/internal/system"
 )
 
 func (c *Controller) setup(

@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/evilmartians/lefthook/v2/internal/config"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/command"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/exec"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/filter"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/utils"
-	"github.com/evilmartians/lefthook/v2/internal/run/result"
+	"github.com/tumarsal/lefthook/v2/internal/config"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/command"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/exec"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/filter"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/utils"
+	"github.com/tumarsal/lefthook/v2/internal/run/result"
 )
 
 const (

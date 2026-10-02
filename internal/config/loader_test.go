@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/evilmartians/lefthook/v2/tests/helpers/gittest"
-	"github.com/evilmartians/lefthook/v2/tests/helpers/loggertest"
+	"github.com/tumarsal/lefthook/v2/tests/helpers/gittest"
+	"github.com/tumarsal/lefthook/v2/tests/helpers/loggertest"
 )
 
 //gocyclo:ignore

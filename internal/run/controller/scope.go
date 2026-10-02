@@ -4,8 +4,8 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/evilmartians/lefthook/v2/internal/config"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/utils"
+	"github.com/tumarsal/lefthook/v2/internal/config"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/utils"
 )
 
 type scope struct {

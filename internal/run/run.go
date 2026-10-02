@@ -3,11 +3,11 @@ package run
 import (
 	"context"
 
-	"github.com/evilmartians/lefthook/v2/internal/config"
-	"github.com/evilmartians/lefthook/v2/internal/git"
-	"github.com/evilmartians/lefthook/v2/internal/logger"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller"
-	"github.com/evilmartians/lefthook/v2/internal/run/result"
+	"github.com/tumarsal/lefthook/v2/internal/config"
+	"github.com/tumarsal/lefthook/v2/internal/git"
+	"github.com/tumarsal/lefthook/v2/internal/logger"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller"
+	"github.com/tumarsal/lefthook/v2/internal/run/result"
 )
 
 // FailOnChangesError is a special error that fails the hook if any project file was changed.

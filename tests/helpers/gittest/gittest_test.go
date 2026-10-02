@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/evilmartians/lefthook/v2/internal/system"
+	"github.com/tumarsal/lefthook/v2/internal/system"
 )
 
 func TestBuilder(t *testing.T) {

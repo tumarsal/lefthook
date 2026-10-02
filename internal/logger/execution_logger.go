@@ -10,7 +10,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 
-	"github.com/evilmartians/lefthook/v2/internal/version"
+	"github.com/tumarsal/lefthook/v2/internal/version"
 )
 
 const (

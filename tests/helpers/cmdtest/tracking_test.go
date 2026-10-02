@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/evilmartians/lefthook/v2/internal/system"
+	"github.com/tumarsal/lefthook/v2/internal/system"
 )
 
 func TestTrackingCmd(t *testing.T) {

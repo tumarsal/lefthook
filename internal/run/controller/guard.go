@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"maps"
 
-	"github.com/evilmartians/lefthook/v2/internal/git"
-	"github.com/evilmartians/lefthook/v2/internal/logger"
+	"github.com/tumarsal/lefthook/v2/internal/git"
+	"github.com/tumarsal/lefthook/v2/internal/logger"
 )
 
 var errRestorationConflict = errors.New("conflict while merging unstaged changes")

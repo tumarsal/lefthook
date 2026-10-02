@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/evilmartians/lefthook/v2/internal/logger"
+	"github.com/tumarsal/lefthook/v2/internal/logger"
 )
 
 // Options contains the data that controls the execution.

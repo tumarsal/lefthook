@@ -9,14 +9,14 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/evilmartians/lefthook/v2/internal/config"
-	"github.com/evilmartians/lefthook/v2/internal/git"
-	"github.com/evilmartians/lefthook/v2/internal/logger"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/exec"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/utils"
-	"github.com/evilmartians/lefthook/v2/internal/run/result"
-	"github.com/evilmartians/lefthook/v2/internal/system"
-	"github.com/evilmartians/lefthook/v2/skip"
+	"github.com/tumarsal/lefthook/v2/internal/config"
+	"github.com/tumarsal/lefthook/v2/internal/git"
+	"github.com/tumarsal/lefthook/v2/internal/logger"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/exec"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/utils"
+	"github.com/tumarsal/lefthook/v2/internal/run/result"
+	"github.com/tumarsal/lefthook/v2/internal/system"
+	"github.com/tumarsal/lefthook/v2/skip"
 )
 
 type Controller struct {

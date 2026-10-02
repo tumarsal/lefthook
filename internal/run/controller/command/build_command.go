@@ -5,10 +5,10 @@ import (
 
 	"al.essio.dev/pkg/shellescape"
 
-	"github.com/evilmartians/lefthook/v2/internal/config"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/command/replacer"
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/filter"
-	"github.com/evilmartians/lefthook/v2/internal/system"
+	"github.com/tumarsal/lefthook/v2/internal/config"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/command/replacer"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/filter"
+	"github.com/tumarsal/lefthook/v2/internal/system"
 )
 
 func (b *Builder) buildCommand(params *JobParams) ([]string, []string, error) {

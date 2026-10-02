@@ -1,4 +1,4 @@
-module github.com/evilmartians/lefthook/v2
+module github.com/tumarsal/lefthook/v2
 
 go 1.26.6
 

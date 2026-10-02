@@ -14,7 +14,7 @@ import (
 	"github.com/creack/pty"
 	"github.com/mattn/go-isatty"
 
-	"github.com/evilmartians/lefthook/v2/internal/logger"
+	"github.com/tumarsal/lefthook/v2/internal/logger"
 )
 
 type CommandExecutor struct {

@@ -10,12 +10,12 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/evilmartians/lefthook/v2/internal/config"
-	"github.com/evilmartians/lefthook/v2/internal/git"
-	"github.com/evilmartians/lefthook/v2/internal/logger"
-	"github.com/evilmartians/lefthook/v2/internal/run"
-	"github.com/evilmartians/lefthook/v2/internal/run/result"
-	"github.com/evilmartians/lefthook/v2/internal/version"
+	"github.com/tumarsal/lefthook/v2/internal/config"
+	"github.com/tumarsal/lefthook/v2/internal/git"
+	"github.com/tumarsal/lefthook/v2/internal/logger"
+	"github.com/tumarsal/lefthook/v2/internal/run"
+	"github.com/tumarsal/lefthook/v2/internal/run/result"
+	"github.com/tumarsal/lefthook/v2/internal/version"
 )
 
 const (

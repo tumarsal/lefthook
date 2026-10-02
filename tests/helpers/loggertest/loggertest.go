@@ -3,7 +3,7 @@ package loggertest
 import (
 	"io"
 
-	"github.com/evilmartians/lefthook/v2/internal/logger"
+	"github.com/tumarsal/lefthook/v2/internal/logger"
 )
 
 func New() *logger.Logger {

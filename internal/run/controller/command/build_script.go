@@ -8,8 +8,8 @@ import (
 
 	"al.essio.dev/pkg/shellescape"
 
-	"github.com/evilmartians/lefthook/v2/internal/run/controller/command/replacer"
-	"github.com/evilmartians/lefthook/v2/internal/system"
+	"github.com/tumarsal/lefthook/v2/internal/run/controller/command/replacer"
+	"github.com/tumarsal/lefthook/v2/internal/system"
 )
 
 const (

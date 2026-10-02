@@ -5,7 +5,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/evilmartians/lefthook/v2/internal/system"
+	"github.com/tumarsal/lefthook/v2/internal/system"
 )
 
 type TrackingCmd struct {

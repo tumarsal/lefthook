@@ -12,8 +12,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/evilmartians/lefthook/v2/internal/version"
-	"github.com/evilmartians/lefthook/v2/tests/helpers/loggertest"
+	"github.com/tumarsal/lefthook/v2/internal/version"
+	"github.com/tumarsal/lefthook/v2/tests/helpers/loggertest"
 )
 
 func TestUpdater_SelfUpdate(t *testing.T) {

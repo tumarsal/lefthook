@@ -11,9 +11,9 @@ import (
 const version = "2.1.11"
 
 var (
-	// Is set via -X github.com/evilmartians/lefthook/v2/internal/version.commit={commit}.
+	// Is set via -X github.com/tumarsal/lefthook/v2/internal/version.commit={commit}.
 	commit string
-	// Is set via -X github.com/evilmartians/lefthook/v2/internal/version.dev=true.
+	// Is set via -X github.com/tumarsal/lefthook/v2/internal/version.dev=true.
 	dev string
 
 	ErrInvalidVersion   = errors.New("invalid version format")
